@@ -21,15 +21,15 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             _sbr = new ServiceBroadcastReceiver();
             _sbr.ReceiveMessage += (context, intent) =>
                                        {
-                                           var cType = (ApplicationConstants.ServiceCommandType) intent.GetIntExtra(ApplicationConstants.COMMAND_TYPE_ID, -1);
+                                           var cType = (AppConstants.ServiceCommandType) intent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
                                            switch (cType)
                                            {
-                                               case ApplicationConstants.ServiceCommandType.SendPing:
+                                               case AppConstants.ServiceCommandType.SendPing:
                                                    {
                                                        Log.Info("TestService", "Ping received");
                                                        break;
                                                    }
-                                               case ApplicationConstants.ServiceCommandType.StopService:
+                                               case AppConstants.ServiceCommandType.StopService:
                                                    {
                                                        Log.Info("TestService", "Service stopping...");
                                                        StopSelf();
@@ -49,7 +49,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             Log.Info("TestService.OnStartCommand", "started");
             var startCommandResult = base.OnStartCommand(intent, flags, startId);
 
-            RegisterReceiver(_sbr, new IntentFilter(ApplicationConstants.SERVICE_COMMAND));
+            RegisterReceiver(_sbr, new IntentFilter(AppConstants.SERVICE_COMMAND));
 
             return startCommandResult;
         }

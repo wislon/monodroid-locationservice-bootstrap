@@ -36,15 +36,19 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             _sbr = new ServiceBroadcastReceiver();
             _sbr.ReceiveMessage += (context, intent) =>
                                        {
-                                           var cType = (ApplicationConstants.ServiceCommandType) intent.GetIntExtra(ApplicationConstants.COMMAND_TYPE_ID, -1);
+                                           var cType = (AppConstants.ServiceCommandType) intent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
                                            switch (cType)
                                            {
-                                               case ApplicationConstants.ServiceCommandType.SendPing:
+                                               case AppConstants.ServiceCommandType.SendPing:
                                                    {
                                                        Log.Info("TestService", "Ping received");
+                                                       var pongIntent = new Intent(AppConstants.APPLICATION_COMMAND);
+                                                       pongIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.ReceivePong);
+                                                       Log.Info("TestService", "Sending pong!");
+                                                       SendBroadcast(pongIntent);
                                                        break;
                                                    }
-                                               case ApplicationConstants.ServiceCommandType.StopService:
+                                               case AppConstants.ServiceCommandType.StopService:
                                                    {
                                                        Log.Info("TestService", "Service stopping...");
                                                        StopSelf();
@@ -85,7 +89,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
             Log.Info("LMService.OnStartCommand", "Received start ID {0} : {1}", startId, intent);
             Log.Info("LMService.OnStartCommand", "Registering broadcast receivers...");
-            RegisterReceiver(_sbr, new IntentFilter(ApplicationConstants.SERVICE_COMMAND)); // so we can listen for commands
+            RegisterReceiver(_sbr, new IntentFilter(AppConstants.SERVICE_COMMAND)); // so we can listen for commands
 
             // so we don't close if/when the app does. We have to stop it specifically.
             return StartCommandResult.Sticky; 

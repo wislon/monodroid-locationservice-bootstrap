@@ -3,6 +3,7 @@ using Android.Content;
 using Android.Util;
 using Android.Widget;
 using Android.OS;
+using MonoDroid.LocationService.Bootstrap.BroadcastReceivers;
 using MonoDroid.LocationService.Bootstrap.Services;
 
 namespace MonoDroid.LocationService.Bootstrap
@@ -14,6 +15,8 @@ namespace MonoDroid.LocationService.Bootstrap
         private Button _btnServiceControl;
         private Button _btnServiceActive;
 
+        private MainActivityBroadcastReceiver _mabReceiver;
+
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
@@ -21,6 +24,9 @@ namespace MonoDroid.LocationService.Bootstrap
             // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
             SetupControls();
+
+            _mabReceiver = new MainActivityBroadcastReceiver();
+            _mabReceiver.Receive += HandleBroadcastMessages;
         }
 
         private void SetupControls()
@@ -49,17 +55,26 @@ namespace MonoDroid.LocationService.Bootstrap
         }
 
 
-        //private void HandleResponseMessages(Context context, Intent intent)
-        //{
-        //    Log.Info("LMSA.HandleResponseMessages", string.Format("Message received: {0}", intent.Action));
+        private void HandleBroadcastMessages(Context context, Intent intent)
+        {
+            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Message received: {0}", intent.Action));
 
-        //    if (intent.Action == LocationMonitoringService.SERVICE_IS_ACTIVE) // pong!
-        //    {
-        //        Log.Info("LMSA.HandleResponseMessages", string.Format("Service is active"));
-        //        _serviceStarted = true;
-        //        UpdateUI();
-        //    }
-        //}
+            if (intent.Action == AppConstants.APPLICATION_COMMAND) // pong!
+            {
+                var commandType = (AppConstants.ApplicationCommandType) intent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
+                switch (commandType)
+                {
+                    case AppConstants.ApplicationCommandType.ReceivePong:
+                        {
+                            Log.Info("LMSA.HandleResponseMessages", string.Format("Service is active"));
+                            _serviceStarted = true;
+                            UpdateUI();
+                            break;
+                        }
+                }
+
+            }
+        }
 
         private void UpdateUI()
         {
@@ -69,9 +84,9 @@ namespace MonoDroid.LocationService.Bootstrap
         protected override void OnResume()
         {
             base.OnResume();
-            //Log.Info("LMSA.OnResume", "Registering receivers...");
-            // RegisterReceiver(_lmsrReceiver, new IntentFilter(LocationMonitoringService.SERVICE_IS_ACTIVE));
-            // CheckIfLocationMonitoringServiceIsActive();
+            Log.Info("LMSA.OnResume", "Registering receivers...");
+            RegisterReceiver(_mabReceiver, new IntentFilter(AppConstants.APPLICATION_COMMAND));
+            CheckIfLocationMonitoringServiceIsActive();
         }
 
         /// <summary>
@@ -80,17 +95,17 @@ namespace MonoDroid.LocationService.Bootstrap
         /// </summary>
         private void CheckIfLocationMonitoringServiceIsActive()
         {
-            Log.Info("LMSA", "Check If Location Monitoring Service Is Active");
-            var intent = new Intent(ApplicationConstants.SERVICE_COMMAND);
-            intent.PutExtra(ApplicationConstants.COMMAND_TYPE_ID, (int) ApplicationConstants.ServiceCommandType.SendPing);
-            SendBroadcast(intent);
+            Log.Info("LMSA", "Check if Location Monitoring Service Is Active");
+            var pingIntent = new Intent(AppConstants.SERVICE_COMMAND);
+            pingIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ServiceCommandType.SendPing);
+            SendBroadcast(pingIntent);
         }
 
         protected override void OnPause()
         {
             base.OnPause();
-            //Log.Info("LMSA.OnPause", "Deregistering receivers...");
-            //this.UnregisterReceiver(_lmsrReceiver);
+            Log.Info("LMSA.OnPause", "Deregistering receivers...");
+            this.UnregisterReceiver(_mabReceiver);
         }
 
     }

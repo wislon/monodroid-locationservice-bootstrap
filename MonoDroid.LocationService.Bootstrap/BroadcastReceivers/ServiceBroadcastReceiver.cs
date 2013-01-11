@@ -9,7 +9,7 @@ namespace MonoDroid.LocationService.Bootstrap.BroadcastReceivers
 
         public override void OnReceive(Context context, Intent intent)
         {
-            if (intent != null && intent.Action == ApplicationConstants.SERVICE_COMMAND)
+            if (intent != null && intent.Action == AppConstants.SERVICE_COMMAND)
             {
                 if (ReceiveMessage != null)
                 {

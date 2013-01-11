@@ -51,7 +51,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ApplicationConstants.cs" />
+    <Compile Include="AppConstants.cs" />
+    <Compile Include="BroadcastReceivers\MainActivityBroadcastReceiver.cs" />
     <Compile Include="BroadcastReceivers\ServiceBroadcastReceiver.cs" />
     <Compile Include="LMSActivity.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
