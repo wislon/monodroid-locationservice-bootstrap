@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="StartService">Start Location Monitoring Service</string>
+    <string name="ApplicationName">AndroidService07_LocationService</string>
+    <string name="LocationMonitoringServiceLabel">Location Monitoring Service</string>
+    <string name="LocationMonitoringServiceStarted">LMS Started</string>
+    <string name="LocationMonitoringServiceStopped">LMS Stopped</string>
+</resources>
