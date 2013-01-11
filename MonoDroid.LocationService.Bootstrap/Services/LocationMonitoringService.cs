@@ -89,7 +89,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
             Log.Info("LMService.OnStartCommand", "Received start ID {0} : {1}", startId, intent);
             Log.Info("LMService.OnStartCommand", "Registering broadcast receivers...");
-            RegisterReceiver(_sbr, new IntentFilter(AppConstants.SERVICE_COMMAND)); // so we can listen for commands
+            RegisterReceiver(_sbr, new IntentFilter(AppConstants.SERVICE_COMMAND)); 
 
             // so we don't close if/when the app does. We have to stop it specifically.
             return StartCommandResult.Sticky; 
@@ -120,7 +120,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
             var notification = new Notification(Resource.Drawable.Icon, text, now);
 
-            // This iss setting up an intent that will be attached to the notification, so when you click the 
+            // This sets up an intent that will be attached to the notification, so when you click the 
             // notification in the notification bar, it'll kick off 'LMSActivity' (our 'launcher')
             PendingIntent contentIntent = PendingIntent.GetActivity(this, 0, new Intent(this, typeof (LMSActivity)), 0);
             notification.SetLatestEventInfo(this,
