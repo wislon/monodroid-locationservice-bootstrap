@@ -55,6 +55,11 @@
     <Compile Include="BroadcastReceivers\MainActivityBroadcastReceiver.cs" />
     <Compile Include="BroadcastReceivers\ServiceBroadcastReceiver.cs" />
     <Compile Include="LMSActivity.cs" />
+    <Compile Include="Persistence\IPersistenceContext.cs" />
+    <Compile Include="Persistence\IRepository.cs" />
+    <Compile Include="Persistence\PersistenceContextBase.cs" />
+    <Compile Include="Persistence\TextFilePersistenceContext.cs" />
+    <Compile Include="Persistence\TextFileRepository.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LocationMonitoringService.cs" />

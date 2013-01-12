@@ -1,19 +1,19 @@
 using System;
-using System.Text;
 using Android.App;
 using Android.Content;
 using Android.Locations;
 using Android.OS;
 using Android.Util;
 using Android.Widget;
-using Java.IO;
 using MonoDroid.LocationService.Bootstrap.BroadcastReceivers;
+using MonoDroid.LocationService.Bootstrap.Persistence;
 
 namespace MonoDroid.LocationService.Bootstrap.Services
 {
     [Service(Label = "Location Monitoring")]
     public class LocationMonitoringService : Service, ILocationListener
     {
+        private IRepository<string> _repository;
 
         private NotificationManager _notificationManager;
         private string _bestProvider;
@@ -32,6 +32,9 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         {
             Log.Info("LMService.OnCreate", string.Format("In OnCreate"));
             base.OnCreate();
+
+            _repository = new TextFileRepository<string>(this);
+
 
             _sbr = new ServiceBroadcastReceiver();
             _sbr.ReceiveMessage += (context, intent) =>
@@ -136,28 +139,16 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         public void OnLocationChanged(Location location)
         {
             var text = string.Format("Lat: {0} Lon: {1}", location.Latitude, location.Longitude);
-            TriggerStandardNotification(text); // this can get annoying after a bit, but it's useful to see if the service is still running.
+            TriggerStandardNotification(text); // this can get annoying after a bit, but it's useful to see if the service is still running and capturing.
             WriteLocationFileEntry(location);
         }
 
         private void WriteLocationFileEntry(Location location)
         {
-            string eol = System.Environment.NewLine;
+            string locationInfo = string.Format("{0}\t{1}\t{2}", location.Latitude, location.Longitude, DateTime.UtcNow.ToString("s"));
 
-            string locationInfo = string.Format("{0}\t{1}\t{2}{3}", location.Latitude, location.Longitude, DateTime.UtcNow.ToString("s"), eol);
-
-            // this will get a directory named /data/data/<app name>/app_lmsData/. 
-            // You'll only be able to get to this file on the device itself if you have root access.
-            var path = GetDir("lmsData", FileCreationMode.Private);
-            var outputFile = new File(path, "locationData.txt");
-
-            var encoding = new UTF8Encoding();
-            using (var fos = new FileOutputStream(outputFile, true))
-            {
-                fos.Write(encoding.GetBytes(locationInfo));
-                fos.Flush();
-                fos.Close();
-            }
+            _repository.Insert(locationInfo);
+            _repository.SaveChanges();
         }
 
         public void OnProviderDisabled(string provider)
