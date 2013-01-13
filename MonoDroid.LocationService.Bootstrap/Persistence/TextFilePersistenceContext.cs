@@ -49,6 +49,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// <param name="type">The type of the object to resolve an IMapToString object for</param>
         private IMapToString<T> ResolveStringMapperFor<T1>(Type type)
         {
+            Log.Info("TFPC.ResolveStringMapperFor", "Attempting to locate a string mapper for {0}", type.Name);
             string stringTypeMapperName = string.Format("{0}Mapper", type.Name);
             var contractsAssemblyName = Assembly.GetExecutingAssembly().GetReferencedAssemblies().ToList().First(gr => gr.Name.Contains("Contracts"));
             Type stringMapper =
@@ -59,9 +60,16 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
 
             if (stringMapper != null)
             {
+                Log.Info("TFPC", "String mapper for {0} found: {1}", type.Name, stringMapper.Name);
                 return (IMapToString<T>)Activator.CreateInstance(stringMapper);
             }
-            string message = string.Format("No object named '{0}' implementing '{1}' (where `1 is a {2}) was found", stringTypeMapperName, typeof(IMapToString<T1>).Name, typeof(T1).Name);
+
+            string message = string.Format("No object named '{0}' implementing '{1}' (where `1 is a {2}) was found", 
+                                            stringTypeMapperName, 
+                                            typeof(IMapToString<T1>).Name, 
+                                            typeof(T1).Name);
+
+            Log.Error("TFPC.ResolveStringMapperFor", message);
             throw new ArgumentException(message);
         }
 
