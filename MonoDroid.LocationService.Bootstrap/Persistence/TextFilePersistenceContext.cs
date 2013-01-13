@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Android.Content;
 using Android.Util;
 using Java.IO;
+using Mono.Contracts.Location;
+using Mono.Contracts.Location.Mappings;
 
 namespace MonoDroid.LocationService.Bootstrap.Persistence
 {
@@ -20,6 +22,8 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         private readonly string _dataFileName;
         private File _dataFile;
 
+        private GeographicDataMapper _stringMapper;
+
         /// <summary>
         /// Default constructor required to pass in the context of the application. Otherwise
         /// we can't get access to things like the file system.
@@ -33,7 +37,24 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
             _dataFileName = dataFileName;
             _storageQueue = new StringBuilder();
             InitialiseStorage();
+            ResolveStringMapperFor(typeof(T));
         }
+
+        /// <summary>
+        /// Looks at the type and determines whether there's something that can map it to a 
+        /// string (i.e. implements IMapToString[type]). 
+        /// </summary>
+        /// <param name="type">The type of the object to resolve an IMapToString object for</param>
+        private void ResolveStringMapperFor(Type type)
+        {
+            //var toStringMapper = type.GetInterface(typeof(IMapToString<T1>).Name); // if it can't find one, _toStringMapper will be null
+            //if (toStringMapper != null)
+            //{
+            //    _stringMapper = Activator.CreateInstance<T1>();
+            //}
+            _stringMapper = new GeographicDataMapper();
+        }
+
 
         /// <summary>
         /// This will get a directory named /data/data/[app name]/app_Data/ if on the internal. it will be created if it doesn't exist.
@@ -57,7 +78,8 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// <param name="data"></param>
         public override void Insert(T data)
         {
-            _storageQueue.AppendFormat("{0}{1}", data, Environment.NewLine); // not using AppendLine! 
+            string outputData = _stringMapper.MapToString(data as GeographicData);
+            _storageQueue.AppendFormat("{0}{1}", outputData, Environment.NewLine); // not using AppendLine! 
         }
 
         public override void SaveChanges()
