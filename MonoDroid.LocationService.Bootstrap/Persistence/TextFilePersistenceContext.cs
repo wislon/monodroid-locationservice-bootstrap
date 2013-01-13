@@ -6,7 +6,7 @@ using Android.Content;
 using Android.Util;
 using Java.IO;
 using Mono.Contracts.Location;
-using Mono.Contracts.Location.Mappings;
+using Mono.Contracts.Location.Mappers;
 
 namespace MonoDroid.LocationService.Bootstrap.Persistence
 {

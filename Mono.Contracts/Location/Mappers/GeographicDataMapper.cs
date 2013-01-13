@@ -1,6 +1,6 @@
 ﻿using Mono.Contracts.Location.Extensions;
 
-namespace Mono.Contracts.Location.Mappings
+namespace Mono.Contracts.Location.Mappers
 {
     public class GeographicDataMapper : IMapToString<GeographicData>
     {
