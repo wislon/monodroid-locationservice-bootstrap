@@ -52,7 +52,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
             //{
             //    _stringMapper = Activator.CreateInstance<T1>();
             //}
-            _stringMapper = new GeographicDataMapper();
+            _stringMapper = new GeographicDataMapper(); // yeah, I know... we're getting there...
         }
 
 
@@ -78,7 +78,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// <param name="data"></param>
         public override void Insert(T data)
         {
-            string outputData = _stringMapper.MapToString(data as GeographicData);
+            string outputData = _stringMapper.MapToString(data as GeographicData); // yeah, I know... we're getting there...
             _storageQueue.AppendFormat("{0}{1}", outputData, Environment.NewLine); // not using AppendLine! 
         }
 
