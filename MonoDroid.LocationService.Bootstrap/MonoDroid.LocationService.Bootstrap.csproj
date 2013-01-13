@@ -59,7 +59,7 @@
     <Compile Include="Persistence\IRepository.cs" />
     <Compile Include="Persistence\PersistenceContextBase.cs" />
     <Compile Include="Persistence\TextFilePersistenceContext.cs" />
-    <Compile Include="Persistence\TextFileRepository.cs" />
+    <Compile Include="Persistence\Repository.cs" />
     <Compile Include="Resources\Resource.Designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LocationMonitoringService.cs" />
@@ -81,7 +81,12 @@
   <ItemGroup>
     <Content Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Mono.Contracts\Mono.Contracts.csproj">
+      <Project>{EA78406E-2891-4B16-8B7D-79F65DDEE5B1}</Project>
+      <Name>Mono.Contracts</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
      Other similar extension points exist, see Microsoft.Common.targets.
