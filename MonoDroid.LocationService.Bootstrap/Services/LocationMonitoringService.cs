@@ -5,6 +5,7 @@ using Android.Locations;
 using Android.OS;
 using Android.Util;
 using Android.Widget;
+using Mono.Contracts.Location;
 using MonoDroid.LocationService.Bootstrap.BroadcastReceivers;
 using MonoDroid.LocationService.Bootstrap.Persistence;
 
@@ -13,7 +14,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
     [Service(Label = "Location Monitoring")]
     public class LocationMonitoringService : Service, ILocationListener
     {
-        private IRepository<string> _repository;
+        private IRepository<GeographicData> _repository;
 
         private NotificationManager _notificationManager;
         private string _bestProvider;
@@ -33,7 +34,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             Log.Info("LMService.OnCreate", string.Format("In OnCreate"));
             base.OnCreate();
 
-            _repository = new TextFileRepository<string>(this);
+            _repository = new Repository<GeographicData>(this);
 
 
             _sbr = new ServiceBroadcastReceiver();
@@ -145,7 +146,14 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private void WriteLocationFileEntry(Location location)
         {
-            string locationInfo = string.Format("{0}\t{1}\t{2}", location.Latitude, location.Longitude, DateTime.UtcNow.ToString("s"));
+            var locationInfo = new GeographicData()
+                                   {
+                                       // leaving Id and Timestanp out, will let the persistence logic take care of that
+                                       Latitude = location.Latitude,
+                                       Longitude = location.Longitude,
+                                       CaptureTimeStamp = DateTime.UtcNow,
+                                       Description = string.Format("Recorded at {0}", DateTime.UtcNow.ToString("s")),
+                                   };
 
             _repository.Insert(locationInfo);
             _repository.SaveChanges();
