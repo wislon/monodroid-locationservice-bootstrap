@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Android.Content;
 using Android.Util;
 using Java.IO;
-using Mono.Contracts.Location;
 using Mono.Contracts.Location.Mappers;
 
 namespace MonoDroid.LocationService.Bootstrap.Persistence
@@ -22,7 +23,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         private readonly string _dataFileName;
         private File _dataFile;
 
-        private GeographicDataMapper _stringMapper;
+        private readonly IMapToString<T> _stringMapper;
 
         /// <summary>
         /// Default constructor required to pass in the context of the application. Otherwise
@@ -37,22 +38,31 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
             _dataFileName = dataFileName;
             _storageQueue = new StringBuilder();
             InitialiseStorage();
-            ResolveStringMapperFor(typeof(T));
+            _stringMapper = ResolveStringMapperFor<T>(typeof(T));
         }
 
         /// <summary>
-        /// Looks at the type and determines whether there's something that can map it to a 
-        /// string (i.e. implements IMapToString[type]). 
+        /// Looks at the type and determines whether there's a mapper for it (convention based, it takes the 
+        /// name of the type you're passing, and suffixes "Mapper" to it). If it finds one, it then checks to 
+        /// see if it implements IMapToString[type]). If it does, it'll give you back an instance of that object.
         /// </summary>
         /// <param name="type">The type of the object to resolve an IMapToString object for</param>
-        private void ResolveStringMapperFor(Type type)
+        private IMapToString<T> ResolveStringMapperFor<T1>(Type type)
         {
-            //var toStringMapper = type.GetInterface(typeof(IMapToString<T1>).Name); // if it can't find one, _toStringMapper will be null
-            //if (toStringMapper != null)
-            //{
-            //    _stringMapper = Activator.CreateInstance<T1>();
-            //}
-            _stringMapper = new GeographicDataMapper();
+            string stringTypeMapperName = string.Format("{0}Mapper", type.Name);
+            var contractsAssemblyName = Assembly.GetExecutingAssembly().GetReferencedAssemblies().ToList().First(gr => gr.Name.Contains("Contracts"));
+            Type stringMapper =
+                Assembly.Load(contractsAssemblyName)
+                        .GetExportedTypes()
+                        .FirstOrDefault(t => t.Name.Equals(stringTypeMapperName) && 
+                              (t.GetInterface(typeof (IMapToString<T1>).Name) != null));
+
+            if (stringMapper != null)
+            {
+                return (IMapToString<T>)Activator.CreateInstance(stringMapper);
+            }
+            string message = string.Format("No object named '{0}' implementing '{1}' (where `1 is a {2}) was found", stringTypeMapperName, typeof(IMapToString<T1>).Name, typeof(T1).Name);
+            throw new ArgumentException(message);
         }
 
 
@@ -78,7 +88,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// <param name="data"></param>
         public override void Insert(T data)
         {
-            string outputData = _stringMapper.MapToString(data as GeographicData);
+            var outputData = _stringMapper.MapToString(data); // InvokeMappingToStringMethod(data);
             _storageQueue.AppendFormat("{0}{1}", outputData, Environment.NewLine); // not using AppendLine! 
         }
 
