@@ -1,4 +1,4 @@
-﻿namespace Mono.Contracts.Location.Mappings
+﻿namespace Mono.Contracts.Location.Mappers
 {
     public interface IMapToString<T>
     {

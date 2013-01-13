@@ -46,8 +46,8 @@
     <Compile Include="Location\GeographicData.cs" />
     <Compile Include="Location\ICoordinateBase.cs" />
     <Compile Include="Location\IGeographicBase.cs" />
-    <Compile Include="Location\Mappings\GeographicDataMapper.cs" />
-    <Compile Include="Location\Mappings\IMapToString.cs" />
+    <Compile Include="Location\Mappers\GeographicDataMapper.cs" />
+    <Compile Include="Location\Mappers\IMapToString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />
