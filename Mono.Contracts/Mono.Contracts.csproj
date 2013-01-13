@@ -9,10 +9,11 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Contracts</RootNamespace>
-    <AssemblyName>Contracts</AssemblyName>
+    <RootNamespace>Mono.Contracts</RootNamespace>
+    <AssemblyName>Mono.Contracts</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <GenerateSerializationAssemblies>Off</GenerateSerializationAssemblies>
+    <TargetFrameworkVersion>v2.3</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -40,10 +41,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Location\CoordinateBase.cs" />
+    <Compile Include="Location\Extensions\GeographicDataExtensions.cs" />
     <Compile Include="Location\GeographicBase.cs" />
     <Compile Include="Location\GeographicData.cs" />
     <Compile Include="Location\ICoordinateBase.cs" />
     <Compile Include="Location\IGeographicBase.cs" />
+    <Compile Include="Location\Mappings\GeographicDataMapper.cs" />
+    <Compile Include="Location\Mappings\IMapToString.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup />

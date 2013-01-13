@@ -1,5 +1,5 @@
 
-namespace Contracts.Location
+namespace Mono.Contracts.Location
 {
     /// <summary>
     /// Interface contract for establishing bare minimum requirement

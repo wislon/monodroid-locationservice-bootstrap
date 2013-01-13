@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoDroid.LocationService.Bootstrap", "MonoDroid.LocationService.Bootstrap\MonoDroid.LocationService.Bootstrap.csproj", "{4DDB2937-171D-4192-985C-27BD6915F639}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Contracts", "Contracts\Contracts.csproj", "{EA78406E-2891-4B16-8B7D-79F65DDEE5B1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mono.Contracts", "Mono.Contracts\Mono.Contracts.csproj", "{EA78406E-2891-4B16-8B7D-79F65DDEE5B1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

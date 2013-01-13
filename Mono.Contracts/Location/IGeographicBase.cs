@@ -1,4 +1,4 @@
-namespace Contracts.Location
+namespace Mono.Contracts.Location
 {
     public interface IGeographicBase
     {

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Contracts.Location
+namespace Mono.Contracts.Location
 {
     /// <summary>
     /// Co-ordinate base class. Bare minimum of info to be recorded, namely an ID

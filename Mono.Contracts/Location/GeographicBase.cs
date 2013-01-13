@@ -1,4 +1,4 @@
-namespace Contracts.Location
+namespace Mono.Contracts.Location
 {
     public class GeographicBase : CoordinateBase, IGeographicBase
     {
