@@ -12,13 +12,13 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
     /// it loads (and passes it on to) can access the file system methods.
     /// </summary>
     /// <typeparam name="T">The type of data to be persisted</typeparam>
-    /// TODO need to reimplement as a proper generic, and get it to work out what kind of persistence store it needs
-    public class TextFileRepository<T> : IRepository<T> where T: class 
+    /// TODO Get it to work out what kind of persistence store it needs
+    public class Repository<T> : IRepository<T> where T: class 
     {
         private readonly Context _context;
         private readonly IPersistenceContext<T> _persistenceContext;
 
-        public TextFileRepository(Context context)
+        public Repository(Context context)
         {
             _context = context;
             _persistenceContext = new TextFilePersistenceContext<T>(_context); // TODO need a service locator or factory
