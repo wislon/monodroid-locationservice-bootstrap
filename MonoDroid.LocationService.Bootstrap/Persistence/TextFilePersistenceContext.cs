@@ -96,7 +96,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// <param name="data"></param>
         public override void Insert(T data)
         {
-            var outputData = _stringMapper.MapToString(data); // InvokeMappingToStringMethod(data);
+            var outputData = _stringMapper.MapToString(data); 
             _storageQueue.AppendFormat("{0}{1}", outputData, Environment.NewLine); // not using AppendLine! 
         }
 
