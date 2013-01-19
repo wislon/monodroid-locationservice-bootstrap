@@ -16,4 +16,12 @@
       android:layout_height="wrap_content"
       android:text="Check if Service is Active"
     />
+  <Button
+      android:id="@+id/btnExportData"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="Export Data"
+    />
+
+  
 </LinearLayout>

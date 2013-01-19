@@ -14,6 +14,7 @@ namespace MonoDroid.LocationService.Bootstrap
         private bool _serviceStarted;
         private Button _btnServiceControl;
         private Button _btnServiceActive;
+        private Button _btnExportData;
 
         private MainActivityBroadcastReceiver _mabReceiver;
 
@@ -52,6 +53,18 @@ namespace MonoDroid.LocationService.Bootstrap
 
             _btnServiceActive = FindViewById<Button>(Resource.Id.btnServiceActive);
             _btnServiceActive.Click += (sender, args) => CheckIfLocationMonitoringServiceIsActive();
+
+            _btnExportData = FindViewById<Button>(Resource.Id.btnExportData);
+            _btnExportData.Click += (sender, args) => ExportData();
+        }
+
+        private void ExportData()
+        {
+            Log.Info("LMSA.ExportData", string.Format("Exporting data..."));
+            var exportIntent = new Intent(AppConstants.SERVICE_COMMAND);
+            exportIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ServiceCommandType.ExportData);
+            SendBroadcast(exportIntent);
+            Log.Info("LMSA.ExportData", string.Format("Export message sent"));
         }
 
 
@@ -69,6 +82,12 @@ namespace MonoDroid.LocationService.Bootstrap
                             Log.Info("LMSA.HandleResponseMessages", string.Format("Service is active"));
                             _serviceStarted = true;
                             UpdateUI();
+                            break;
+                        }
+                    case AppConstants.ApplicationCommandType.DataExported:
+                        {
+                            Log.Info("LMSA.HandleResponseMessages", string.Format("Data exported successfully"));
+                            Toast.MakeText(this, "Exported successfully", ToastLength.Short).Show();
                             break;
                         }
                 }

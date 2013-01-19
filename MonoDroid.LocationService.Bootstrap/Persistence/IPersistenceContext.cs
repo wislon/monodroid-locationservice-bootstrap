@@ -9,6 +9,6 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         void Insert(T data);
         void SaveChanges();
         void CancelChanges();
-        void ExportData();
+        string ExportData();
     }
 }

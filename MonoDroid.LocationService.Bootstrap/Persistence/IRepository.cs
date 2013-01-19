@@ -38,6 +38,12 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// </summary>
         /// <param name="data"></param>
         void Update(T data);
+
+        /// <summary>
+        /// Provides a method to export the data. This is done via the 
+        /// persistence context, the implementation of which, is up to you.
+        /// </summary>
+        string ExportData();
     }
 
 

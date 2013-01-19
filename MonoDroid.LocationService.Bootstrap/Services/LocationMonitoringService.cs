@@ -21,6 +21,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         private LocationManager _locationManager;
 
         private ServiceBroadcastReceiver _sbr;
+        private bool _exporting;
 
 
         public override IBinder OnBind(Intent intent)
@@ -47,7 +48,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                                    {
                                                        Log.Info("TestService", "Ping received");
                                                        var pongIntent = new Intent(AppConstants.APPLICATION_COMMAND);
-                                                       pongIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.ReceivePong);
+                                                       pongIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int)AppConstants.ApplicationCommandType.ReceivePong);
                                                        Log.Info("TestService", "Sending pong!");
                                                        SendBroadcast(pongIntent);
                                                        break;
@@ -56,6 +57,23 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                                    {
                                                        Log.Info("TestService", "Service stopping...");
                                                        StopSelf();
+                                                       break;
+                                                   }
+                                               case AppConstants.ServiceCommandType.ExportData:
+                                                   {
+                                                       _exporting = true;
+                                                       try
+                                                       {
+                                                           string fileName = _repository.ExportData();
+                                                           var exportedIntent = new Intent(AppConstants.APPLICATION_COMMAND);
+                                                           exportedIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int)AppConstants.ApplicationCommandType.DataExported);
+                                                           exportedIntent.PutExtra(AppConstants.EXPORTED_FILE_NAME, fileName);
+                                                           SendBroadcast(exportedIntent);
+                                                       }
+                                                       finally
+                                                       {
+                                                           _exporting = false;
+                                                       }
                                                        break;
                                                    }
                                                default:
@@ -156,7 +174,10 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                    };
 
             _repository.Insert(locationInfo);
-            _repository.SaveChanges();
+            if (!_exporting) // so we still queue up the data, just don't write it if the current data is being exported.
+            {
+                _repository.SaveChanges();
+            }
         }
 
         public void OnProviderDisabled(string provider)

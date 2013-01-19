@@ -62,6 +62,6 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// could be as simple as copying a text file, or dumping a datbase to
         /// json/xml. It's up to you. 
         /// </summary>
-        public abstract void ExportData();
+        public abstract string ExportData();
     }
 }

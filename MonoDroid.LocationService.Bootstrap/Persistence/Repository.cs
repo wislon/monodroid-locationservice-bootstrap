@@ -54,5 +54,10 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         {
             throw new NotImplementedException();
         }
+
+        public string ExportData()
+        {
+            return _persistenceContext.ExportData();
+        }
     }
 }

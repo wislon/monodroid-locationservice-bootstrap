@@ -8,6 +8,7 @@ using Android.Content;
 using Android.Util;
 using Java.IO;
 using Mono.Contracts.Location.Mappers;
+using SIO = System.IO;
 
 namespace MonoDroid.LocationService.Bootstrap.Persistence
 {
@@ -85,7 +86,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
             Log.Info("TFPC.InitialiseStorage", "Setting up storage");
             var path = GetDir("Data", FileCreationMode.Private); // it prefixes 'app_' to whatever directory name you give it.
             _dataFile = new File(path, _dataFileName);
-            Log.Info("TFPC.SaveChanges", "Data will be saved to {0}", _dataFile.AbsolutePath);
+            Log.Info("TFPC.SaveChanges", "Data will be appended to {0}", _dataFile.AbsolutePath);
         }
 
         /// <summary>
@@ -111,13 +112,44 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         }
 
         /// <summary>
-        /// This will simply copy the text file from its private location, to
-        /// the 'Download' folder, which is pretty much publicly accessible.
-        /// From there it can be shared, or copied across manually
+        /// This will simply copy the text file from its private location, to the 'Download' folder, which is 
+        /// pretty much publicly accessible (by the user and their apps, at least). From there it can be shared, 
+        /// or copied across manually.
         /// </summary>
-        public override void ExportData()
+        public override string ExportData()
         {
-            throw new NotImplementedException();
+            if (SIO.File.Exists(_dataFile.AbsolutePath))
+            {
+                Log.Info("TFPC.ExportData", "Exporting data...");
+                if (Android.OS.Environment.ExternalStorageState == Android.OS.Environment.MediaMounted)
+                {
+                    // this will put it at /mnt/Android/Data/[your package name]/files/Downloads
+                    File downloadsDir = GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads);
+                    var incrementedDataFileName = GetUniqueExportFileName(downloadsDir, SIO.Path.ChangeExtension(_dataFileName, string.Empty));
+
+                    var exportFileName = new File(downloadsDir, incrementedDataFileName);
+                    Log.Info("TFPC.SaveChanges", string.Format("Copying from {0} to {1}", _dataFile.AbsolutePath, exportFileName.AbsolutePath));
+                    SIO.File.Copy(_dataFile.AbsolutePath, exportFileName.AbsolutePath);
+                    _dataFile.Delete();
+                    InitialiseStorage();
+                    Log.Info("TFPC.SaveChanges", string.Format("Exported to {0}", exportFileName.AbsolutePath));
+                    return exportFileName.AbsolutePath;
+                }
+            }
+            Log.Info("TFPC.SaveChanges", string.Format("{0} doesn't exist, nothing to export", _dataFileName));
+            return string.Empty;
+        }
+
+        private string GetUniqueExportFileName(File downloadsDir, string baseFileName)
+        {
+            int i = 0;
+            const string formatString = "{0}{1:D4}.txt";
+            string exportFileName = string.Format(formatString, baseFileName, i);
+            while (SIO.File.Exists(SIO.Path.Combine(downloadsDir.AbsolutePath, exportFileName)))
+            {
+                exportFileName = string.Format(formatString, baseFileName, i++);
+            }
+            return exportFileName;
         }
 
         private void WriteTheDataAsync(byte[] dataToWrite)
