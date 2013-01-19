@@ -56,5 +56,12 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
         /// </summary>
         /// <returns></returns>
         public abstract void SaveChanges();
+
+        /// <summary>
+        /// Export the data from the native format, to somewhere else. This
+        /// could be as simple as copying a text file, or dumping a datbase to
+        /// json/xml. It's up to you. 
+        /// </summary>
+        public abstract void ExportData();
     }
 }

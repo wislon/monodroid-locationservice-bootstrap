@@ -110,6 +110,16 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
             _storageQueue.Clear();
         }
 
+        /// <summary>
+        /// This will simply copy the text file from its private location, to
+        /// the 'Download' folder, which is pretty much publicly accessible.
+        /// From there it can be shared, or copied across manually
+        /// </summary>
+        public override void ExportData()
+        {
+            throw new NotImplementedException();
+        }
+
         private void WriteTheDataAsync(byte[] dataToWrite)
         {
             Task.Factory.StartNew(() =>
