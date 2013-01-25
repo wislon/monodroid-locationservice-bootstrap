@@ -1,7 +1,7 @@
 monodroid-locationservice-bootstrap
 ===================================
 
-**Xamarin (Mono for Android)** bootstrap application for quickly getting a simple location monitoring service up and running, and capturing location-based data.
+**Xamarin (Mono for Android)** bootstrap application for quickly getting a simple location monitoring service up and running, and capturing some user-defined location-based data.
 
 This does the bare minimum, I'm working on making it more extensible. Feel free to fork it for your own use! And if there's something you don't like, or is just plain wrong, then don't just throw rocks at it. Armchair coding is easy. Anyone can do it. Rather fork it, fix it and send a pull request. I'm happy to look at pull requests that won't move it too far away from being a generic system that people can use to leverage their own projects.
 
