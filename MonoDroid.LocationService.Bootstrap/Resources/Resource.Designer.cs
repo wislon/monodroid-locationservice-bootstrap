@@ -54,6 +54,9 @@ namespace MonoDroid.LocationService.Bootstrap
 			// aapt resource value: 0x7f050000
 			public const int btnServiceControl = 2131034112;
 			
+			// aapt resource value: 0x7f050003
+			public const int tvGpsStatus = 2131034115;
+			
 			private Id()
 			{
 			}

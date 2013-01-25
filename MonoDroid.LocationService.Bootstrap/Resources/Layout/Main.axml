@@ -22,6 +22,11 @@
       android:layout_height="wrap_content"
       android:text="Export Data"
     />
-
+  <TextView
+      android:id="@+id/tvGpsStatus"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="GPS Status: ..."
+    />
   
 </LinearLayout>
