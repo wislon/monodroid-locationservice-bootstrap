@@ -41,7 +41,7 @@ namespace MonoDroid.LocationService.Bootstrap.Persistence
 
         /// <summary>
         /// Provides a method to export the data. This is done via the 
-        /// persistence context, the implementation of which, is up to you.
+        /// persistence context (tho it's up to you to implement it).
         /// </summary>
         string ExportData();
     }

@@ -56,24 +56,13 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                                case AppConstants.ServiceCommandType.StopService:
                                                    {
                                                        Log.Info("TestService", "Service stopping...");
+                                                       ExportData();
                                                        StopSelf();
                                                        break;
                                                    }
                                                case AppConstants.ServiceCommandType.ExportData:
                                                    {
-                                                       _exporting = true;
-                                                       try
-                                                       {
-                                                           string fileName = _repository.ExportData();
-                                                           var exportedIntent = new Intent(AppConstants.APPLICATION_COMMAND);
-                                                           exportedIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int)AppConstants.ApplicationCommandType.DataExported);
-                                                           exportedIntent.PutExtra(AppConstants.EXPORTED_FILE_NAME, fileName);
-                                                           SendBroadcast(exportedIntent);
-                                                       }
-                                                       finally
-                                                       {
-                                                           _exporting = false;
-                                                       }
+                                                       ExportData();
                                                        break;
                                                    }
                                                default:
@@ -97,10 +86,27 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                };
             _locationManager = (LocationManager) GetSystemService(Context.LocationService);
             _bestProvider = _locationManager.GetBestProvider(criteria, false);
-            Location _location = _locationManager.GetLastKnownLocation(_bestProvider);
+            // Location _location = _locationManager.GetLastKnownLocation(_bestProvider);
             // at least 15 seconds between updates, at least 100 metres between updates, 'this' because it implements ILocationListener.
             _locationManager.RequestLocationUpdates(_bestProvider, 15000, 100, this);
 
+        }
+
+        private void ExportData()
+        {
+            try
+            {
+                _exporting = true;
+                string fileName = _repository.ExportData();
+                var exportedIntent = new Intent(AppConstants.APPLICATION_COMMAND);
+                exportedIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.DataExported);
+                exportedIntent.PutExtra(AppConstants.EXPORTED_FILE_NAME, fileName);
+                SendBroadcast(exportedIntent);
+            }
+            finally
+            {
+                _exporting = false;
+            }
         }
 
 
@@ -121,12 +127,13 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         public override void OnDestroy()
         {
             Log.Info("LMService.OnDestroy", "In OnDestroy");
-            base.OnDestroy();
+            ExportData();
             _notificationManager.Cancel(Resource.String.LocationMonitoringServiceStarted);
             Toast.MakeText(this, Resource.String.LocationMonitoringServiceStopped, ToastLength.Short).Show();
             _locationManager.RemoveUpdates(this);
             UnregisterReceiver(_sbr);
             StopSelf();
+            base.OnDestroy();
         }
 
         private void ShowNotification()
