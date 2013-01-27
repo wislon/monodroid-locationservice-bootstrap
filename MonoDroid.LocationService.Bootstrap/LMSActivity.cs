@@ -9,7 +9,7 @@ using MonoDroid.LocationService.Bootstrap.Services;
 
 namespace MonoDroid.LocationService.Bootstrap
 {
-    [Activity(Label = "Location Monitoring", MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Location Monitoring", MainLauncher = true, Icon = "@drawable/Icon")]
     public class LMSActivity : Activity
     {
         private bool _serviceStarted;
