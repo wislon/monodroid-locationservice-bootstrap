@@ -78,7 +78,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             var criteria = new Criteria
                                {
                                    Accuracy = Accuracy.Fine,
-                                   PowerRequirement = Power.High,
+                                   PowerRequirement = Power.Medium,
                                    AltitudeRequired = false,
                                    BearingRequired = false,
                                    SpeedRequired = false,
