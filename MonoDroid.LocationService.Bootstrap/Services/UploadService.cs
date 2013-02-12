@@ -9,6 +9,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
     {
         protected override void OnHandleIntent(Intent intent)
         {
+
             
         }
     }
