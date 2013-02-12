@@ -66,6 +66,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\LocationMonitoringService.cs" />
     <Compile Include="Services\TestService.cs" />
+    <Compile Include="Services\UploadService.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
