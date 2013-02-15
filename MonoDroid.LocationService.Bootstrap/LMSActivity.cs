@@ -16,6 +16,8 @@ namespace MonoDroid.LocationService.Bootstrap
         private Button _btnServiceControl;
         private Button _btnServiceActive;
         private Button _btnExportData;
+        private Button _btnUploadData;
+
         private TextView _tvGpsStatus;
 
         private const int ReturnFromGpsSettingActivity = 1;
@@ -47,6 +49,10 @@ namespace MonoDroid.LocationService.Bootstrap
 
             _btnExportData = FindViewById<Button>(Resource.Id.btnExportData);
             _btnExportData.Click += (sender, args) => ExportData();
+
+            _btnUploadData = FindViewById<Button>(Resource.Id.btnUploadData);
+            _btnUploadData.Click += (sender, args) => UploadData();
+
 
             _tvGpsStatus = FindViewById<TextView>(Resource.Id.tvGpsStatus);
         }
@@ -120,6 +126,11 @@ namespace MonoDroid.LocationService.Bootstrap
             Log.Info("LMSA.ExportData", string.Format("Export message sent"));
         }
 
+        private void UploadData()
+        {
+            var uploadIntent = new Intent(this, typeof(UploadService));
+            StartService(uploadIntent);
+        }
 
         private void HandleBroadcastMessages(Context context, Intent intent)
         {

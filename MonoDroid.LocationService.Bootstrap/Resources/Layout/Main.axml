@@ -22,6 +22,12 @@
       android:layout_height="wrap_content"
       android:text="Export Data"
     />
+  <Button
+      android:id="@+id/btnUploadData"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="Upload Data"
+    />
   <TextView
       android:id="@+id/tvGpsStatus"
       android:layout_width="fill_parent"
