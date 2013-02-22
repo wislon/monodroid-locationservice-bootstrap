@@ -132,26 +132,33 @@ namespace MonoDroid.LocationService.Bootstrap
             StartService(uploadIntent);
         }
 
-        private void HandleBroadcastMessages(Context context, Intent intent)
+        private void HandleBroadcastMessages(Context context, Intent receivedIntent)
         {
-            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Message received: {0}", intent.Action));
+            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Message received: {0}", receivedIntent.Action));
 
-            if (intent.Action == AppConstants.APPLICATION_COMMAND) // pong!
+            if (receivedIntent.Action == AppConstants.APPLICATION_COMMAND) // pong!
             {
-                var commandType = (AppConstants.ApplicationCommandType) intent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
+                var commandType = (AppConstants.ApplicationCommandType) receivedIntent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
                 switch (commandType)
                 {
                     case AppConstants.ApplicationCommandType.ReceivePong:
                         {
-                            Log.Info("LMSA.HandleResponseMessages", string.Format("Service is active"));
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Service is active"));
                             _serviceStarted = true;
                             UpdateUI();
                             break;
                         }
                     case AppConstants.ApplicationCommandType.DataExported:
                         {
-                            Log.Info("LMSA.HandleResponseMessages", string.Format("Data exported successfully"));
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Data exported successfully"));
                             Toast.MakeText(this, "Exported successfully", ToastLength.Short).Show();
+                            break;
+                        }
+                    case AppConstants.ApplicationCommandType.ShowToastMessage:
+                        {
+                            var toastMessage = receivedIntent.GetStringExtra(AppConstants.TOAST_MESSAGE_KEY);
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format(toastMessage));
+                            Toast.MakeText(this, toastMessage, ToastLength.Short).Show();
                             break;
                         }
                 }
