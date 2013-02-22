@@ -6,7 +6,9 @@ using System.Text;
 using System.Threading.Tasks;
 using Android.App;
 using Android.Content;
+using Android.OS;
 using Android.Util;
+using Android.Widget;
 using Java.IO;
 using Newtonsoft.Json;
 using SIO = System.IO;
@@ -21,6 +23,8 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private const string _apiBaseUrl = "http://your.website.here/api";
 
+        private readonly Handler _handler = new Handler();
+
         protected override void OnHandleIntent(Intent intent)
         {
             if (!_uploadingData)
@@ -33,7 +37,10 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                         var filesToUpload = GetListOfFilesToUpload().ToList();
                         if (filesToUpload.Any())
                         {
+
+                            SendBroadcastForToastMessage(string.Format("Uploading {0} files...", filesToUpload.Count));
                             ProcessFiles(filesToUpload.ToArray());
+                            SendBroadcastForToastMessage("Upload complete");
                         }
                     }
                 }
@@ -45,12 +52,21 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             }
         }
 
+        private void SendBroadcastForToastMessage(string messageToToast)
+        {
+            var toastIntent = new Intent(AppConstants.APPLICATION_COMMAND);
+            toastIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.ShowToastMessage);
+            toastIntent.PutExtra(AppConstants.TOAST_MESSAGE_KEY, messageToToast);
+            SendBroadcast(toastIntent);
+        }
+
         private void ProcessFiles(string[] filesToUpload)
         {
             var tasks = new Task[filesToUpload.Length];
             for (int i = 0; i < filesToUpload.Length; i++)
             {
                 string fileNameToUpload  = filesToUpload[i];
+                // TODO possible thread explosion here, need a parallel.for/partition or something
                 tasks[i] = Task.Factory.StartNew(() => UploadFileToWebAPIHost(fileNameToUpload));
             }
             Task.WaitAll(tasks);
@@ -58,13 +74,14 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private void UploadFileToWebAPIHost(string fileNameToUpload)
         {
+            _handler.Post(() => Log.Info("UPS.UFTWAH", "Starting upload of {0}", fileNameToUpload));
             var contents = ReadTheDataAsync(fileNameToUpload).Result;
 
             // this is just way, WAY easier than doing battle with stuff like base-64 encoding, 
             // formurlencoding, setting multipart form boundaries etc.
             string jsonContents = JsonConvert.SerializeObject(contents); 
 
-            string uploadUrl = string.Format("{0}/{1}", _apiBaseUrl, "UploadDataFile");
+            string uploadUrl = string.Format("{0}/{1}", APIBaseUrl, "UploadDataFile");
 
             var request = new HttpWebRequest(new Uri(uploadUrl))
                               {
@@ -79,13 +96,16 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                 sw.Close();
             }
 
-            request.BeginGetResponse(ProcessUploadResponse, request);
+            // TODO we need a better way of garbage collecting the data we've successfully uploaded...
+            var requestParameters = new RequestParameters {RequestObject = request, SentFileName = fileNameToUpload};
+
+            request.BeginGetResponse(ProcessUploadResponse, requestParameters);
         }
 
 
         #region Example destination Web API controller method which can handle this data
-        // A (working) sample of a Web API controller method which will accept the data and present
-        // it to you for use. 
+        // A (working) sample of a Web API controller method which will accept 
+        // (and automatically deserialise) the data. 
         // [HttpPost]
         // public HttpResponseMessage UploadDataFile([FromBody]string dataFile)
         // {
@@ -98,15 +118,23 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private void ProcessUploadResponse(IAsyncResult ar)
         {
-            var request = (HttpWebRequest) ar.AsyncState;
+            var requestParameters = (RequestParameters)ar.AsyncState;
+            var originalRequest = requestParameters.RequestObject;
             try
             {
-                var response = request.EndGetResponse(ar);
-                Log.Info("UPS.PUR", "Request appears to have succeeded. Or at least it didn't fail badly enough to throw");
+                var response = (HttpWebResponse)originalRequest.EndGetResponse(ar);
+                if ((int)response.StatusCode >= 200 && (int)response.StatusCode <= 299) // 
+                {
+                    _handler.Post(() => Log.Info("UPS.PUR", "Upload succeeded: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
+                    _handler.Post(() => Log.Info("UPS.PUR", "Deleting file {0}", requestParameters.SentFileName));
+                    SIO.File.Delete(requestParameters.SentFileName);
+                    return;
+                }
+                _handler.Post(() => Log.Info("UPS.PUR", "Problem with upload: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
             }
             catch (Exception ex)
             {
-                Log.Info("UPS.PUR", "Response message: {0} ", ex.Message);
+                _handler.Post(() => Log.Info("UPS.PUR", "Response message: {0} ", ex.Message));
             }
         }
 
@@ -122,11 +150,13 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             return Task.Factory.StartNew(() =>
                                              {
                                                  string contents;
-                                                 using (var fis = new SIO.FileStream(fileNameToUpload, SIO.FileMode.Open,
-                                                                                  SIO.FileAccess.Read,
-                                                                                  SIO.FileShare.None))
+                                                 using (var fis = new SIO.FileStream(fileNameToUpload, 
+                                                                                     SIO.FileMode.Open,
+                                                                                     SIO.FileAccess.Read,
+                                                                                     SIO.FileShare.None))
                                                  {
-                                                     using (var sr = new SIO.StreamReader(fis)) // this has previously been written using the UTF8Encoding().GetBytes, already
+                                                     // this has previously been written using the UTF8Encoding().GetBytes, already
+                                                     using (var sr = new SIO.StreamReader(fis)) 
                                                      {
                                                          contents = sr.ReadToEnd();
                                                          sr.Close();
@@ -162,5 +192,11 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             }
             return new string[] { };
         }
+    }
+
+    internal class RequestParameters
+    {
+        public HttpWebRequest RequestObject { get; set; }
+        public string SentFileName { get; set; }
     }
 }
