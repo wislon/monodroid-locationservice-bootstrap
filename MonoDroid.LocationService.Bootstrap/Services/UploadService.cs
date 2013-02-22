@@ -8,7 +8,6 @@ using Android.App;
 using Android.Content;
 using Android.OS;
 using Android.Util;
-using Android.Widget;
 using Java.IO;
 using Newtonsoft.Json;
 using SIO = System.IO;
