@@ -21,7 +21,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
     {
         private bool _uploadingData;
 
-        private const string _apiBaseUrl = "http://your.website.here/api";
+        private const string APIBaseUrl = "http://your.website.here/api";
 
         private readonly Handler _handler = new Handler();
 
