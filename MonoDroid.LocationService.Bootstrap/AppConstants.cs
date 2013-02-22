@@ -23,7 +23,10 @@
         {
             Unknown = -1,
             ReceivePong = 0,
-            DataExported
+            ShowToastMessage,
+            DataExported,
+            DataUploading,
+            DataUploaded,
         }
 
         public const string UPLOAD_COMMAND = "UPLOAD_COMMAND";
@@ -34,6 +37,9 @@
             StartUpload = 0,
             CancelUpload
         }
+
+        public const string TOAST_MESSAGE_KEY = "TOAST_MESSAGE_KEY";
+
 
     }
 
