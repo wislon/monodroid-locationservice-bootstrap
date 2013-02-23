@@ -26,28 +26,26 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         protected override void OnHandleIntent(Intent intent)
         {
-            if (!_uploadingData)
-            {
-                _uploadingData = true;
-                try
-                {
-                    if (ExternalMediaMounted())
-                    {
-                        var filesToUpload = GetListOfFilesToUpload().ToList();
-                        if (filesToUpload.Any())
-                        {
+            if (_uploadingData) return;
 
-                            SendBroadcastForToastMessage(string.Format("Uploading {0} files...", filesToUpload.Count));
-                            ProcessFiles(filesToUpload.ToArray());
-                            SendBroadcastForToastMessage("Upload complete");
-                        }
+            _uploadingData = true;
+            try
+            {
+                if (ExternalMediaMounted())
+                {
+                    var filesToUpload = GetListOfFilesToUpload().ToList();
+                    if (filesToUpload.Any())
+                    {
+
+                        SendBroadcastForToastMessage(string.Format("Uploading {0} files...", filesToUpload.Count));
+                        ProcessFiles(filesToUpload.ToArray());
+                        SendBroadcastForToastMessage("Upload complete");
                     }
                 }
-                finally
-                {
-                    _uploadingData = false;
-                }
-
+            }
+            finally
+            {
+                _uploadingData = false;
             }
         }
 
@@ -73,7 +71,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private void UploadFileToWebAPIHost(string fileNameToUpload)
         {
-            _handler.Post(() => Log.Info("UPS.UFTWAH", "Starting upload of {0}", fileNameToUpload));
+            _handler.Post(() => Log.Info("LMS.US.UFTWAH", "Starting upload of {0}", fileNameToUpload));
             var contents = ReadTheDataAsync(fileNameToUpload).Result;
 
             // this is just way, WAY easier than doing battle with stuff like base-64 encoding, 
@@ -124,16 +122,16 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                 var response = (HttpWebResponse)originalRequest.EndGetResponse(ar);
                 if ((int)response.StatusCode >= 200 && (int)response.StatusCode <= 299) // 
                 {
-                    _handler.Post(() => Log.Info("UPS.PUR", "Upload succeeded: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
-                    _handler.Post(() => Log.Info("UPS.PUR", "Deleting file {0}", requestParameters.SentFileName));
+                    _handler.Post(() => Log.Info("LMS.US.PUR", "Upload succeeded: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
+                    _handler.Post(() => Log.Info("LMS.US.PUR", "Deleting file {0}", requestParameters.SentFileName));
                     SIO.File.Delete(requestParameters.SentFileName);
                     return;
                 }
-                _handler.Post(() => Log.Info("UPS.PUR", "Problem with upload: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
+                _handler.Post(() => Log.Info("LMS.US.PUR", "Problem with upload: Status {0} - {1}", (int)response.StatusCode, response.StatusDescription));
             }
             catch (Exception ex)
             {
-                _handler.Post(() => Log.Info("UPS.PUR", "Response message: {0} ", ex.Message));
+                _handler.Post(() => Log.Info("LMS.US.PUR", "Response message: {0} ", ex.Message));
             }
         }
 
@@ -174,18 +172,18 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         private IEnumerable<string> GetListOfFilesToUpload()
         {
 
-            Log.Info("TFPC.ExportData", "Checking if media is mounted");
+            Log.Info("LMS.US.GLOFTU", "Checking if media is mounted");
             // this will look at /mnt/sdcard/Android/Data/[your package name]/files/Downloads/applicationData.*.txt
             File downloadsDir = GetExternalFilesDir(Android.OS.Environment.DirectoryDownloads);
 
-            Log.Info("TFPC.ExportData", "Searching for exported data in {0} ...", downloadsDir.AbsolutePath);
+            Log.Info("LMS.US.GLOFTU", "Searching for exported data in {0} ...", downloadsDir.AbsolutePath);
             var fileSystemEntries = SIO.Directory.GetFileSystemEntries(downloadsDir.AbsolutePath,
                                                                         "applicationData.*.txt");
             if (fileSystemEntries.Any())
             {
                 foreach (var fileSystemEntry in fileSystemEntries)
                 {
-                    Log.Info("LMS.US.UploadData", fileSystemEntry);
+                    Log.Info("LMS.US.GLOFTU", fileSystemEntry);
                 }
                 return fileSystemEntries;
             }

@@ -126,6 +126,22 @@ namespace MonoDroid.LocationService.Bootstrap
             Log.Info("LMSA.ExportData", string.Format("Export message sent"));
         }
 
+        /// <summary>
+        /// Sets an 'alarm' that will go off at regular intervals, to upload any exported data it 
+        /// may find. This is set to 15 minutes for now
+        /// </summary>
+        private void ScheduleDataForUpload()
+        {
+            Log.Info("LMSA.SDFU", string.Format("Setting upload schedule..."));
+            var alarmManager = this.GetSystemService(Context.AlarmService) as AlarmManager;
+            var serviceIntent = new Intent(this, typeof (UploadService));
+
+            alarmManager.SetInexactRepeating(AlarmType.Rtc, 
+                                             0, 
+                                             AlarmManager.IntervalFifteenMinutes, 
+                                             PendingIntent.GetService(this, 0, serviceIntent, PendingIntentFlags.CancelCurrent));
+        }
+
         private void UploadData()
         {
             var uploadIntent = new Intent(this, typeof(UploadService));
@@ -152,6 +168,7 @@ namespace MonoDroid.LocationService.Bootstrap
                         {
                             Log.Info("LMSA.HandleBroadcastMessages", string.Format("Data exported successfully"));
                             Toast.MakeText(this, "Exported successfully", ToastLength.Short).Show();
+                            ScheduleDataForUpload(); // set a repeating 'alarm' that'll trigger the UploadService to go and upload files if it finds any.
                             break;
                         }
                     case AppConstants.ApplicationCommandType.ShowToastMessage:
