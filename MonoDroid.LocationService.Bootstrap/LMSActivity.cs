@@ -16,6 +16,8 @@ namespace MonoDroid.LocationService.Bootstrap
         private Button _btnServiceControl;
         private Button _btnServiceActive;
         private Button _btnExportData;
+        private Button _btnUploadData;
+
         private TextView _tvGpsStatus;
 
         private const int ReturnFromGpsSettingActivity = 1;
@@ -47,6 +49,10 @@ namespace MonoDroid.LocationService.Bootstrap
 
             _btnExportData = FindViewById<Button>(Resource.Id.btnExportData);
             _btnExportData.Click += (sender, args) => ExportData();
+
+            _btnUploadData = FindViewById<Button>(Resource.Id.btnUploadData);
+            _btnUploadData.Click += (sender, args) => UploadData();
+
 
             _tvGpsStatus = FindViewById<TextView>(Resource.Id.tvGpsStatus);
         }
@@ -120,27 +126,56 @@ namespace MonoDroid.LocationService.Bootstrap
             Log.Info("LMSA.ExportData", string.Format("Export message sent"));
         }
 
-
-        private void HandleBroadcastMessages(Context context, Intent intent)
+        /// <summary>
+        /// Sets an 'alarm' that will go off at regular intervals, to upload any exported data it 
+        /// may find. This is set to 15 minutes for now
+        /// </summary>
+        private void ScheduleDataForUpload()
         {
-            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Message received: {0}", intent.Action));
+            Log.Info("LMSA.SDFU", string.Format("Setting upload schedule..."));
+            var alarmManager = this.GetSystemService(Context.AlarmService) as AlarmManager;
+            var serviceIntent = new Intent(this, typeof (UploadService));
 
-            if (intent.Action == AppConstants.APPLICATION_COMMAND) // pong!
+            alarmManager.SetInexactRepeating(AlarmType.Rtc, 
+                                             0, 
+                                             AlarmManager.IntervalFifteenMinutes, 
+                                             PendingIntent.GetService(this, 0, serviceIntent, PendingIntentFlags.CancelCurrent));
+        }
+
+        private void UploadData()
+        {
+            var uploadIntent = new Intent(this, typeof(UploadService));
+            StartService(uploadIntent);
+        }
+
+        private void HandleBroadcastMessages(Context context, Intent receivedIntent)
+        {
+            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Message received: {0}", receivedIntent.Action));
+
+            if (receivedIntent.Action == AppConstants.APPLICATION_COMMAND) // pong!
             {
-                var commandType = (AppConstants.ApplicationCommandType) intent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
+                var commandType = (AppConstants.ApplicationCommandType) receivedIntent.GetIntExtra(AppConstants.COMMAND_TYPE_ID, -1);
                 switch (commandType)
                 {
                     case AppConstants.ApplicationCommandType.ReceivePong:
                         {
-                            Log.Info("LMSA.HandleResponseMessages", string.Format("Service is active"));
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Service is active"));
                             _serviceStarted = true;
                             UpdateUI();
                             break;
                         }
                     case AppConstants.ApplicationCommandType.DataExported:
                         {
-                            Log.Info("LMSA.HandleResponseMessages", string.Format("Data exported successfully"));
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format("Data exported successfully"));
                             Toast.MakeText(this, "Exported successfully", ToastLength.Short).Show();
+                            ScheduleDataForUpload(); // set a repeating 'alarm' that'll trigger the UploadService to go and upload files if it finds any.
+                            break;
+                        }
+                    case AppConstants.ApplicationCommandType.ShowToastMessage:
+                        {
+                            var toastMessage = receivedIntent.GetStringExtra(AppConstants.TOAST_MESSAGE_KEY);
+                            Log.Info("LMSA.HandleBroadcastMessages", string.Format(toastMessage));
+                            Toast.MakeText(this, toastMessage, ToastLength.Short).Show();
                             break;
                         }
                 }
