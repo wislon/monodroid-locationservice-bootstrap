@@ -1,7 +1,6 @@
 Thumbs.db
 *.obj
 *.exe
-*.pdb
 *.user
 *.aps
 *.pch
@@ -29,3 +28,4 @@ _ReSharper*/
 $tf*/
 *.md.orig
 *.orig
+Microsoft.VisualStudio.TestTools.CppUnitTestFramework.CppUnitTestExtension.pdb

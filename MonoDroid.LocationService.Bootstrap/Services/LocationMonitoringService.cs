@@ -22,6 +22,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private ServiceBroadcastReceiver _sbr;
         private bool _exporting;
+        private bool _uploading;
 
 
         public override IBinder OnBind(Intent intent)
@@ -96,12 +97,15 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         {
             try
             {
-                _exporting = true;
-                string fileName = _repository.ExportData();
-                var exportedIntent = new Intent(AppConstants.APPLICATION_COMMAND);
-                exportedIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.DataExported);
-                exportedIntent.PutExtra(AppConstants.EXPORTED_FILE_NAME, fileName);
-                SendBroadcast(exportedIntent);
+                if (!_exporting)
+                {
+                    _exporting = true;
+                    string fileName = _repository.ExportData();
+                    var exportedIntent = new Intent(AppConstants.APPLICATION_COMMAND);
+                    exportedIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int)AppConstants.ApplicationCommandType.DataExported);
+                    exportedIntent.PutExtra(AppConstants.EXPORTED_FILE_NAME, fileName);
+                    SendBroadcast(exportedIntent);
+                }
             }
             finally
             {
