@@ -185,6 +185,10 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         }
     }
 
+    /// <summary>
+    /// Just a wrapper for some miscellaneous request-specific info, so when the callback is invoked, 
+    /// we can get access to the request object as well as the name of file it just uploaded.
+    /// </summary>
     internal class RequestParameters
     {
         public HttpWebRequest RequestObject { get; set; }
