@@ -61,6 +61,7 @@
     <Compile Include="AppConstants.cs" />
     <Compile Include="BroadcastReceivers\MainActivityBroadcastReceiver.cs" />
     <Compile Include="BroadcastReceivers\ServiceBroadcastReceiver.cs" />
+    <Compile Include="Helpers\NotificationHelper.cs" />
     <Compile Include="LMSActivity.cs" />
     <Compile Include="Persistence\IPersistenceContext.cs" />
     <Compile Include="Persistence\IRepository.cs" />

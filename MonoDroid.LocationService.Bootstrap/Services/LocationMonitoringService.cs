@@ -22,7 +22,6 @@ namespace MonoDroid.LocationService.Bootstrap.Services
 
         private ServiceBroadcastReceiver _sbr;
         private bool _exporting;
-        private bool _uploading;
 
 
         public override IBinder OnBind(Intent intent)
@@ -154,7 +153,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             var notification = new Notification(Resource.Drawable.Icon, text, now);
 
             // This sets up an intent that will be attached to the notification, so when you click the 
-            // notification in the notification bar, it'll kick off 'LMSActivity' (our 'launcher')
+            // notification in the notification bar, it'll bring us back to 'LMSActivity' (our 'launcher')
             PendingIntent contentIntent = PendingIntent.GetActivity(this, 0, new Intent(this, typeof (LMSActivity)), 0);
             notification.SetLatestEventInfo(this,
                                             GetText(Resource.String.LocationMonitoringServiceLabel),
