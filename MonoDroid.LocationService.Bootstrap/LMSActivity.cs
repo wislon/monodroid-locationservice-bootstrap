@@ -1,10 +1,13 @@
-﻿using Android.App;
+﻿using System;
+using Android.App;
 using Android.Content;
 using Android.Locations;
+using Android.Preferences;
 using Android.Util;
 using Android.Widget;
 using Android.OS;
 using MonoDroid.LocationService.Bootstrap.BroadcastReceivers;
+using MonoDroid.LocationService.Bootstrap.Helpers;
 using MonoDroid.LocationService.Bootstrap.Services;
 
 namespace MonoDroid.LocationService.Bootstrap
@@ -17,10 +20,16 @@ namespace MonoDroid.LocationService.Bootstrap
         private Button _btnServiceActive;
         private Button _btnExportData;
         private Button _btnUploadData;
+        private Button _btnPreferences;
 
         private TextView _tvGpsStatus;
 
-        private const int ReturnFromGpsSettingActivity = 1;
+        private enum LaunchedActivity
+        {
+            ReturnFromGpsSettingActivity = 1,
+            ReturnFromPreferenceActivity
+        }
+
 
         private MainActivityBroadcastReceiver _mabReceiver;
 
@@ -53,9 +62,19 @@ namespace MonoDroid.LocationService.Bootstrap
             _btnUploadData = FindViewById<Button>(Resource.Id.btnUploadData);
             _btnUploadData.Click += (sender, args) => UploadData();
 
-
             _tvGpsStatus = FindViewById<TextView>(Resource.Id.tvGpsStatus);
+
+            _btnPreferences = FindViewById<Button>(Resource.Id.btnPreferences);
+            _btnPreferences.Click += (sender, args) => ShowPreferencesScreen();
         }
+
+        private void ShowPreferencesScreen()
+        {
+            var prefs = PreferenceManager.GetDefaultSharedPreferences(this);
+            var preferencesIntent = new Intent(this, typeof (UserPreferencesActivity));
+            this.StartActivityForResult(preferencesIntent, (int)LaunchedActivity.ReturnFromPreferenceActivity);
+        }
+
 
         private void ToggleServiceActive()
         {
@@ -88,7 +107,7 @@ namespace MonoDroid.LocationService.Bootstrap
                                                      {
                                                          // load up the system's location settings so the user can turn on the GPS service
                                                          var showGpsSettingsIntent = new Intent(Android.Provider.Settings.ActionLocationSourceSettings);
-                                                         StartActivityForResult(showGpsSettingsIntent, ReturnFromGpsSettingActivity);
+                                                         StartActivityForResult(showGpsSettingsIntent, (int)LaunchedActivity.ReturnFromGpsSettingActivity);
                                                      })
                 .SetNegativeButton("Cancel", (sender, args) => {  })
                 .SetCancelable(true)
@@ -107,11 +126,16 @@ namespace MonoDroid.LocationService.Bootstrap
         protected override void OnActivityResult(int requestCode, Result resultCode, Intent data)
         {
             base.OnActivityResult(requestCode, resultCode, data);
-            switch (requestCode)
+            switch ((LaunchedActivity)requestCode)
             {
-                case ReturnFromGpsSettingActivity:
+                case LaunchedActivity.ReturnFromGpsSettingActivity:
                     {
                         UpdateUI();
+                        break;
+                    }
+                case LaunchedActivity.ReturnFromPreferenceActivity:
+                    {
+                        // hook for when it comes back from the preferences screen, do nothing yet
                         break;
                     }
             }

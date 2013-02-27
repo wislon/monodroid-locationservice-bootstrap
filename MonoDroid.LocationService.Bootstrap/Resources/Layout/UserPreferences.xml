@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="Preferences" />
+  <EditTextPreference
+      android:key="BaseWebAPIUrl"
+      android:name="Base Web API Url"
+      android:summary="This is the base URL for your Web API"
+      android:defaultValue="http://hostname:port/api"
+      android:title="Base Web API Url"
+    />
+  <EditTextPreference
+      android:key="APIControllerName"
+      android:name="API Controller Name"
+      android:summary="Web API controller which will handle your upload"
+      android:defaultValue="GeographicData"
+      android:title="API Controller Name"
+    />
+  <EditTextPreference
+      android:key="ControllerMethodName"
+      android:name="Controller Method Name"
+      android:summary="Method on your controller which handles uploads (leave blank to use HTTP POST verb only)"
+      android:defaultValue="UploadData"
+      android:title="Controller Method Name"
+    />
+</PreferenceScreen>

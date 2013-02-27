@@ -34,5 +34,11 @@
       android:layout_height="wrap_content"
       android:text="GPS Status: ..."
     />
+  <Button
+      android:id="@+id/btnPreferences"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="Preferences"
+    />
   
 </LinearLayout>
