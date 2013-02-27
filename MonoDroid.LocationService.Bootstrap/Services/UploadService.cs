@@ -9,6 +9,7 @@ using Android.Content;
 using Android.OS;
 using Android.Util;
 using Java.IO;
+using MonoDroid.LocationService.Bootstrap.Helpers;
 using Newtonsoft.Json;
 using SIO = System.IO;
 
@@ -37,9 +38,9 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                     if (filesToUpload.Any())
                     {
 
-                        SendBroadcastForToastMessage(string.Format("Uploading {0} files...", filesToUpload.Count));
+                        NotificationHelper.SendBroadcastForToastMessage(this, string.Format("LMS: Uploading {0} files...", filesToUpload.Count));
                         ProcessFiles(filesToUpload.ToArray());
-                        SendBroadcastForToastMessage("Upload complete");
+                        NotificationHelper.SendBroadcastForToastMessage(this, "LMS: Upload complete");
                     }
                 }
             }
@@ -47,14 +48,6 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             {
                 _uploadingData = false;
             }
-        }
-
-        private void SendBroadcastForToastMessage(string messageToToast)
-        {
-            var toastIntent = new Intent(AppConstants.APPLICATION_COMMAND);
-            toastIntent.PutExtra(AppConstants.COMMAND_TYPE_ID, (int) AppConstants.ApplicationCommandType.ShowToastMessage);
-            toastIntent.PutExtra(AppConstants.TOAST_MESSAGE_KEY, messageToToast);
-            SendBroadcast(toastIntent);
         }
 
         private void ProcessFiles(string[] filesToUpload)
@@ -132,6 +125,7 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             catch (Exception ex)
             {
                 _handler.Post(() => Log.Info("LMS.US.PUR", "Response message: {0} ", ex.Message));
+                NotificationHelper.SendBroadcastForToastMessage(this, string.Format("LMS: Upload failed: {0} ", ex.Message));
             }
         }
 
