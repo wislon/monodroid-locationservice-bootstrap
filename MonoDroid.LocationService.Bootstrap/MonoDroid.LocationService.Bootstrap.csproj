@@ -62,6 +62,7 @@
     <Compile Include="BroadcastReceivers\MainActivityBroadcastReceiver.cs" />
     <Compile Include="BroadcastReceivers\ServiceBroadcastReceiver.cs" />
     <Compile Include="Helpers\NotificationHelper.cs" />
+    <Compile Include="Helpers\PreferencesHelper.cs" />
     <Compile Include="LMSActivity.cs" />
     <Compile Include="Persistence\IPersistenceContext.cs" />
     <Compile Include="Persistence\IRepository.cs" />
@@ -73,6 +74,7 @@
     <Compile Include="Services\LocationMonitoringService.cs" />
     <Compile Include="Services\TestService.cs" />
     <Compile Include="Services\UploadService.cs" />
+    <Compile Include="UserPreferencesActivity.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
@@ -92,6 +94,7 @@
   <ItemGroup>
     <Content Include="Properties\AndroidManifest.xml" />
     <AndroidResource Include="Resources\Drawable\Icon.png" />
+    <AndroidResource Include="Resources\Layout\UserPreferences.xml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Mono.Contracts\Mono.Contracts.csproj">

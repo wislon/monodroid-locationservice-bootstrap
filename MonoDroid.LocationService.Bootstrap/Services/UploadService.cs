@@ -21,7 +21,10 @@ namespace MonoDroid.LocationService.Bootstrap.Services
     {
         private bool _uploadingData;
 
-        private const string APIBaseUrl = "http://your.website.here/api";
+        private string _apiBaseUrl = string.Empty;
+        private string _apiControllerName = string.Empty;
+        private string _uploadMethodName = string.Empty;
+
 
         private readonly Handler _handler = new Handler();
 
@@ -29,6 +32,9 @@ namespace MonoDroid.LocationService.Bootstrap.Services
         {
             if (_uploadingData) return;
 
+            _apiBaseUrl = PreferencesHelper.GetPreferenceAsString(this, AppConstants.PrefsKeyBaseWebAPIUrl);
+            _apiControllerName = PreferencesHelper.GetPreferenceAsString(this, AppConstants.PrefsKeyAPIControllerName);
+            _uploadMethodName = PreferencesHelper.GetPreferenceAsString(this, AppConstants.PrefsKeyUploadMethodName);
             _uploadingData = true;
             try
             {
@@ -71,7 +77,8 @@ namespace MonoDroid.LocationService.Bootstrap.Services
             // formurlencoding, setting multipart form boundaries etc.
             string jsonContents = JsonConvert.SerializeObject(contents); 
 
-            string uploadUrl = string.Format("{0}/{1}", APIBaseUrl, "UploadDataFile");
+            string uploadUrl = string.Format("{0}/{1}/{2}", _apiBaseUrl, _apiControllerName, _uploadMethodName);
+            _handler.Post(() => Log.Info("LMS.US.UFTWAH", "Uploading to: {0}", uploadUrl));
 
             var request = new HttpWebRequest(new Uri(uploadUrl))
                               {

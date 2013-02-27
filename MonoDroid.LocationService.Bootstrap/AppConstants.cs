@@ -3,6 +3,15 @@
     public static class AppConstants
     {
 
+        #region Shared Preferences Keys
+
+        public const string PrefsKeyBaseWebAPIUrl = "BaseWebAPIUrl";
+        public const string PrefsKeyAPIControllerName = "APIControllerName";
+        public const string PrefsKeyUploadMethodName = "ControllerMethodName";
+
+        #endregion
+
+
         public const string COMMAND_TYPE_ID = "COMMAND_TYPE_ID";
         public const string EXPORTED_FILE_NAME = "EXPORTED_FILE_NAME";
 
