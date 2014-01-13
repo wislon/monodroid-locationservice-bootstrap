@@ -85,6 +85,10 @@ namespace MonoDroid.LocationService.Bootstrap.Services
                                    CostAllowed = false,
                                };
             _locationManager = (LocationManager) GetSystemService(Context.LocationService);
+            
+            // !!! Remember to enable the location permissions in the project attributes or _bestProvider comes back null :)
+            // you will also need to ensure that the container class either inherits from Service or Activity, or it goes all crashy;
+            // but you'll see a build warning about it implementing IJavaObject but not inheriting from Java.Object
             _bestProvider = _locationManager.GetBestProvider(criteria, false);
             // Location _location = _locationManager.GetLastKnownLocation(_bestProvider);
             // at least 15 seconds between updates, at least 100 metres between updates, 'this' because it implements ILocationListener.
