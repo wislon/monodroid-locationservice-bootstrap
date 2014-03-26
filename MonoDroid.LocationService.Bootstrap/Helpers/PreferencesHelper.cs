@@ -25,10 +25,10 @@ namespace DashCam.Classes.Helpers
         _sharedPreferences = PreferenceManager.GetDefaultSharedPreferences(context);
       }
 
-      var value = _sharedPreferences.GetString(preferenceKey, "false");
-      bool returnVal = bool.TryParse(value, out returnVal) && returnVal;
-      return returnVal;
+      var value = _sharedPreferences.GetBoolean(preferenceKey, false);
+      return value;
     }
+
 
     public static long GetPreferenceAsLong(Context context, string preferenceKey)
     {
